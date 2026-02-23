@@ -95,24 +95,31 @@ async function startServer() {
       socket.emit("roomCreated", { roomId, players: rooms[roomId].players, isHost: true });
     });
 
-    socket.on("joinRoom", ({ roomId }) => {
-      if (rooms[roomId] && rooms[roomId].status === 'waiting') {
-        const room = rooms[roomId];
+    socket.on("joinRoom", (payload) => {
+      const roomId = payload?.roomId;
+      const cleanRoomId = typeof roomId === 'string' ? roomId.trim().toUpperCase() : '';
+      console.log(`[JOIN] Player ${socket.id} attempting to join room: '${cleanRoomId}'`);
+      console.log(`[JOIN] Available rooms:`, Object.keys(rooms));
+
+      if (rooms[cleanRoomId] && rooms[cleanRoomId].status === 'waiting') {
+        const room = rooms[cleanRoomId];
         const usedColors = Object.values(room.players).map(p => p.name);
         const availableColor = COLORS.find(c => !usedColors.includes(c.name)) || COLORS[Math.floor(Math.random() * COLORS.length)];
         
         const newPlayer = createPlayer(socket.id, availableColor);
         
         room.players[socket.id] = newPlayer;
-        socketRoomMap[socket.id] = roomId;
-        socket.join(roomId);
+        socketRoomMap[socket.id] = cleanRoomId;
+        socket.join(cleanRoomId);
         
+        console.log(`[JOIN] Player ${socket.id} successfully joined room ${cleanRoomId}`);
         // Notify the joiner
-        socket.emit("roomJoined", { roomId, players: room.players, isHost: false });
+        socket.emit("roomJoined", { roomId: cleanRoomId, players: room.players, isHost: false });
         
         // Notify others in the room
-        socket.to(roomId).emit("playerJoinedRoom", newPlayer);
+        socket.to(cleanRoomId).emit("playerJoinedRoom", newPlayer);
       } else {
+        console.log(`[JOIN] Failed for room '${cleanRoomId}'. Exists: ${!!rooms[cleanRoomId]}, Status: ${rooms[cleanRoomId]?.status}`);
         socket.emit("error", "Room not found or game already started");
       }
     });

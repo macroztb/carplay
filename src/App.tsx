@@ -98,11 +98,12 @@ export default function App() {
 
   const handleJoin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!joinCode.trim() || joinCode.length !== 6) {
+    const code = joinCode.trim().toUpperCase();
+    if (code.length !== 6) {
         setError('Please enter a valid 6-character room code');
         return;
     }
-    socket.emit('joinRoom', { roomId: joinCode.toUpperCase() });
+    socket.emit('joinRoom', { roomId: code });
   };
 
   const handleStartGame = () => {
