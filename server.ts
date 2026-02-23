@@ -45,7 +45,7 @@ async function startServer() {
 
   // Helper to generate room code
   const generateRoomCode = () => {
-    return Math.random().toString(36).substring(2, 8).toUpperCase();
+    return Math.random().toString(36).substring(2, 8).padEnd(6, '0').toUpperCase();
   };
 
   const COLORS = [
@@ -161,19 +161,22 @@ async function startServer() {
     socket.on("disconnect", () => {
       const roomId = socketRoomMap[socket.id];
       if (roomId && rooms[roomId]) {
-        delete rooms[roomId].players[socket.id];
-        delete socketRoomMap[socket.id];
-        
-        io.to(roomId).emit("playerDisconnected", socket.id);
-        
-        // If room is empty, delete it
-        if (Object.keys(rooms[roomId].players).length === 0) {
+        if (rooms[roomId].hostId === socket.id) {
+          // Host left, close the room
+          io.to(roomId).emit("error", "Host disconnected. Room closed.");
           delete rooms[roomId];
-        } else if (rooms[roomId].hostId === socket.id) {
-            // Assign new host if host left
-            const newHostId = Object.keys(rooms[roomId].players)[0];
-            rooms[roomId].hostId = newHostId;
-            io.to(roomId).emit("hostMigrated", newHostId);
+          // We don't need to clean up socketRoomMap for everyone here, 
+          // they will disconnect or leave on their own when they get the error.
+        } else {
+          // Normal player left
+          delete rooms[roomId].players[socket.id];
+          delete socketRoomMap[socket.id];
+          io.to(roomId).emit("playerDisconnected", socket.id);
+          
+          if (Object.keys(rooms[roomId].players).length === 0 && rooms[roomId].status === 'racing') {
+            // If all players left during a race, maybe end it? 
+            // For now, just let the host keep the empty room.
+          }
         }
       }
     });

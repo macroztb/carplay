@@ -58,12 +58,26 @@ export default function App() {
 
     socket.on('error', (msg) => {
       setError(msg);
+      if (msg === "Host disconnected. Room closed." || msg === "Room not found or game already started") {
+        setView('landing');
+        setRoomCode('');
+        setPlayers({});
+        setIsHost(false);
+      }
     });
     
     socket.on('hostMigrated', (newHostId) => {
         if (socket.id === newHostId) {
             setIsHost(true);
         }
+    });
+
+    socket.on('disconnect', () => {
+      setView('landing');
+      setError('Disconnected from server. Please try again.');
+      setRoomCode('');
+      setPlayers({});
+      setIsHost(false);
     });
 
     return () => {
@@ -74,6 +88,7 @@ export default function App() {
       socket.off('gameStarted');
       socket.off('error');
       socket.off('hostMigrated');
+      socket.off('disconnect');
     };
   }, []);
 
