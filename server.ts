@@ -81,12 +81,10 @@ async function startServer() {
     // Room Management
     socket.on("createRoom", () => {
       const roomId = generateRoomCode();
-      const colorInfo = COLORS[0];
-      const newPlayer = createPlayer(socket.id, colorInfo);
       
       rooms[roomId] = {
         id: roomId,
-        players: { [socket.id]: newPlayer },
+        players: {},
         status: 'waiting',
         hostId: socket.id
       };

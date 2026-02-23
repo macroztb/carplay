@@ -9,7 +9,8 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import GameCanvas from './components/GameCanvas';
+import HostScreen from './components/HostScreen';
+import ClientScreen from './components/ClientScreen';
 import { socket } from './services/socket';
 import { Player } from './types';
 
@@ -93,15 +94,19 @@ export default function App() {
     socket.emit('startGame');
   };
 
+  if (view === 'game') {
+    return isHost ? <HostScreen initialPlayers={players} /> : <ClientScreen initialPlayers={players} />;
+  }
+
   return (
-    <div className={`min-h-screen bg-slate-900 flex flex-col items-center ${view === 'game' ? 'justify-start' : 'justify-center'} font-sans text-slate-100`}>
-      <header className={`w-full max-w-4xl mx-auto ${view === 'game' ? 'p-2' : 'p-6'} flex justify-between items-center transition-all`}>
-        <h1 className={`${view === 'game' ? 'text-2xl' : 'text-4xl'} font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 transform -skew-x-12 transition-all`}>
+    <div className={`min-h-screen bg-slate-900 flex flex-col items-center justify-center font-sans text-slate-100`}>
+      <header className={`w-full max-w-4xl mx-auto p-6 flex justify-between items-center transition-all`}>
+        <h1 className={`text-4xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 transform -skew-x-12 transition-all`}>
           TURBO RACE
         </h1>
       </header>
 
-      <main className={`flex-1 w-full flex flex-col items-center ${view === 'game' ? 'p-0' : 'p-4'} transition-all`}>
+      <main className={`flex-1 w-full flex flex-col items-center p-4 transition-all`}>
         {view === 'landing' && (
           <div className="bg-slate-800 p-8 rounded-2xl shadow-2xl border border-slate-700 max-w-md w-full">
             <h2 className="text-2xl font-bold mb-6 text-center">Start Your Engines</h2>
@@ -114,7 +119,7 @@ export default function App() {
                   onClick={handleCreate}
                   className="w-full bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-400 hover:to-orange-500 text-black font-bold py-3 rounded-lg shadow-lg transition-transform active:scale-95"
                 >
-                  CREATE RACE
+                  CREATE RACE (HOST)
                 </button>
                 
                 <div className="relative">
@@ -122,7 +127,7 @@ export default function App() {
                         <div className="w-full border-t border-slate-700"></div>
                     </div>
                     <div className="relative flex justify-center text-sm">
-                        <span className="px-2 bg-slate-800 text-slate-500">Or join a friend</span>
+                        <span className="px-2 bg-slate-800 text-slate-500">Or join as player</span>
                     </div>
                 </div>
 
@@ -186,10 +191,6 @@ export default function App() {
                     </div>
                 )}
             </div>
-        )}
-
-        {view === 'game' && (
-          <GameCanvas initialPlayers={players} />
         )}
       </main>
     </div>
