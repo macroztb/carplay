@@ -1,6 +1,6 @@
 import React, { useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { PerspectiveCamera, Environment, Text, OrbitControls } from '@react-three/drei';
+import { PerspectiveCamera, Text, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 import { Player } from '../types';
 import { TRACK_WIDTH, TRACK_HEIGHT, TRACK_RADIUS, TRACK_SEGMENTS, isPointOnTrackMath } from '../gameConstants';
@@ -212,7 +212,6 @@ const GameScene = ({
         shadow-camera-bottom={-700}
         shadow-camera-far={1000}
       />
-      <Environment preset="sunset" />
       
       <TrackMesh />
       
