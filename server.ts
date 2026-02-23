@@ -101,7 +101,7 @@ async function startServer() {
       console.log(`[JOIN] Player ${socket.id} attempting to join room: '${cleanRoomId}'`);
       console.log(`[JOIN] Available rooms:`, Object.keys(rooms));
 
-      if (rooms[cleanRoomId] && rooms[cleanRoomId].status === 'waiting') {
+      if (rooms[cleanRoomId]) {
         const room = rooms[cleanRoomId];
         const usedColors = Object.values(room.players).map(p => p.name);
         const availableColor = COLORS.find(c => !usedColors.includes(c.name)) || COLORS[Math.floor(Math.random() * COLORS.length)];
@@ -118,9 +118,14 @@ async function startServer() {
         
         // Notify others in the room
         socket.to(cleanRoomId).emit("playerJoinedRoom", newPlayer);
+
+        // If the game is already racing, tell the joiner to start the game immediately
+        if (room.status === 'racing') {
+           socket.emit("gameStarted", room.players);
+        }
       } else {
-        console.log(`[JOIN] Failed for room '${cleanRoomId}'. Exists: ${!!rooms[cleanRoomId]}, Status: ${rooms[cleanRoomId]?.status}`);
-        socket.emit("error", "Room not found or game already started");
+        console.log(`[JOIN] Failed for room '${cleanRoomId}'. Exists: ${!!rooms[cleanRoomId]}`);
+        socket.emit("error", "Room not found");
       }
     });
 

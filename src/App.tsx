@@ -58,7 +58,7 @@ export default function App() {
 
     socket.on('error', (msg) => {
       setError(msg);
-      if (msg === "Host disconnected. Room closed." || msg === "Room not found or game already started") {
+      if (msg === "Host disconnected. Room closed." || msg === "Room not found") {
         setView('landing');
         setRoomCode('');
         setPlayers({});
