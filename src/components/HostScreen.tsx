@@ -51,10 +51,11 @@ export default function HostScreen({ initialPlayers }: { initialPlayers: Record<
   const playerList = Object.values(players);
   
   // Determine grid columns based on player count
-  let gridCols = 'grid-cols-1';
-  if (playerList.length === 2) gridCols = 'grid-cols-2';
-  else if (playerList.length >= 3 && playerList.length <= 4) gridCols = 'grid-cols-2';
-  else if (playerList.length > 4) gridCols = 'grid-cols-3';
+  let gridClass = 'grid-cols-1 grid-rows-1';
+  if (playerList.length === 2) gridClass = 'grid-cols-2 grid-rows-1';
+  else if (playerList.length >= 3 && playerList.length <= 4) gridClass = 'grid-cols-2 grid-rows-2';
+  else if (playerList.length > 4 && playerList.length <= 6) gridClass = 'grid-cols-3 grid-rows-2';
+  else if (playerList.length > 6) gridClass = 'grid-cols-4 grid-rows-2';
 
   const formatTime = (ms: number) => {
       if (ms === Infinity || !ms) return "--:--";
@@ -82,14 +83,14 @@ export default function HostScreen({ initialPlayers }: { initialPlayers: Record<
         </div>
       </div>
       
-      <div className={`flex-1 grid ${gridCols} gap-2 p-2 bg-black`}>
+      <div className={`flex-1 grid ${gridClass} gap-2 p-2 bg-black min-h-0`}>
         {playerList.length === 0 ? (
           <div className="flex items-center justify-center text-slate-500 text-2xl h-full w-full col-span-full">
             Waiting for players...
           </div>
         ) : (
           playerList.map(p => (
-            <div key={p.id} className="relative rounded-xl overflow-hidden border-2 border-slate-700">
+            <div key={p.id} className="relative w-full h-full rounded-xl overflow-hidden border-2 border-slate-700 bg-slate-900">
               <GameRenderer players={players} followId={p.id} />
               <div className="absolute top-4 left-4 bg-black/60 text-white px-4 py-2 rounded-lg backdrop-blur-sm border border-white/10">
                 <div className="font-bold flex items-center gap-2">
