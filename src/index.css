@@ -1,1 +1,24 @@
 @import "tailwindcss";
+
+@media (orientation: portrait) {
+  .force-landscape {
+    width: 100vh !important;
+    height: 100vw !important;
+    transform: translateY(100vh) rotate(-90deg);
+    transform-origin: top left;
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+  }
+}
+@media (orientation: landscape) {
+  .force-landscape {
+    width: 100vw !important;
+    height: 100vh !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+  }
+}

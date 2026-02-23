@@ -274,100 +274,122 @@ export default function ClientScreen({ initialPlayers }: { initialPlayers: Recor
   }, [currentLapStart]);
 
   return (
-    <div className="w-full h-screen bg-slate-900 flex flex-col text-white select-none touch-none">
+    <div className="force-landscape bg-slate-900 flex flex-col text-white select-none touch-none">
       {/* HUD */}
-      <div className="flex-none p-4 bg-slate-800 border-b border-slate-700 flex justify-between items-center">
-        <div>
-          <div className="text-xs text-slate-400 uppercase font-bold">Laps</div>
-          <div className="text-2xl font-black">{laps}</div>
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 flex gap-8 p-2 px-6 bg-slate-800/90 rounded-b-3xl border-b border-x border-slate-700 backdrop-blur-md z-10 shadow-lg">
+        <div className="text-center">
+          <div className="text-[10px] text-slate-400 uppercase font-bold">Laps</div>
+          <div className="text-xl font-black">{laps}</div>
         </div>
         <div className="text-center">
-          <div className="text-xs text-slate-400 uppercase font-bold">Current Time</div>
-          <div className="text-3xl font-mono font-bold text-yellow-400">{formatTime(currentTime)}</div>
+          <div className="text-[10px] text-slate-400 uppercase font-bold">Time</div>
+          <div className="text-xl font-mono font-bold text-yellow-400">{formatTime(currentTime)}</div>
         </div>
-        <div className="text-right">
-          <div className="text-xs text-slate-400 uppercase font-bold">Best Time</div>
-          <div className="text-xl font-mono text-slate-300">{formatTime(bestLapTime)}</div>
+        <div className="text-center">
+          <div className="text-[10px] text-slate-400 uppercase font-bold">Best</div>
+          <div className="text-lg font-mono text-slate-300">{formatTime(bestLapTime)}</div>
         </div>
       </div>
 
       {wrongWay && (
-        <div className="absolute top-24 left-1/2 -translate-x-1/2 bg-red-600 text-white px-6 py-2 rounded-full font-bold animate-pulse z-50">
+        <div className="absolute top-20 left-1/2 -translate-x-1/2 bg-red-600 text-white px-6 py-2 rounded-full font-bold animate-pulse z-50 shadow-lg">
           WRONG WAY!
         </div>
       )}
 
+      {/* Nitro Bar */}
+      <div className="absolute top-0 left-0 right-0 h-1 bg-slate-800 z-20">
+        <div 
+          className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 transition-all duration-100"
+          style={{ width: `${nitro}%` }}
+        />
+      </div>
+
       {/* Controls */}
-      <div className="flex-1 flex flex-col justify-end p-6 gap-6">
-        {/* Nitro Bar */}
-        <div className="w-full h-4 bg-slate-800 rounded-full overflow-hidden border border-slate-700">
-          <div 
-            className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 transition-all duration-100"
-            style={{ width: `${nitro}%` }}
-          />
+      <div className="flex-1 relative w-full h-full p-4 pointer-events-none">
+        
+        {/* Left Controls */}
+        <div className="absolute left-6 top-16 bottom-6 w-24 flex flex-col justify-between pointer-events-auto">
+          <button 
+            className="w-full h-20 bg-green-500/80 rounded-2xl border-b-4 border-green-800 active:border-b-0 active:translate-y-1 flex items-center justify-center font-bold text-xl shadow-lg backdrop-blur-sm"
+            onMouseDown={handleTouchStart('Forward')}
+            onMouseUp={handleTouchEnd('Forward')}
+            onMouseLeave={handleTouchEnd('Forward')}
+            onTouchStart={handleTouchStart('Forward')}
+            onTouchEnd={handleTouchEnd('Forward')}
+          >
+            GAS
+          </button>
+          <button 
+            className="w-full h-24 bg-slate-800/80 rounded-2xl border-b-4 border-slate-950 active:border-b-0 active:translate-y-1 flex items-center justify-center text-4xl shadow-lg backdrop-blur-sm"
+            onMouseDown={handleTouchStart('Left')}
+            onMouseUp={handleTouchEnd('Left')}
+            onMouseLeave={handleTouchEnd('Left')}
+            onTouchStart={handleTouchStart('Left')}
+            onTouchEnd={handleTouchEnd('Left')}
+          >
+            ◀
+          </button>
+          <button 
+            className="w-full h-20 bg-red-600/80 rounded-2xl border-b-4 border-red-900 active:border-b-0 active:translate-y-1 flex items-center justify-center font-bold shadow-lg backdrop-blur-sm"
+            onMouseDown={handleTouchStart('Brake')}
+            onMouseUp={handleTouchEnd('Brake')}
+            onMouseLeave={handleTouchEnd('Brake')}
+            onTouchStart={handleTouchStart('Brake')}
+            onTouchEnd={handleTouchEnd('Brake')}
+          >
+            BRK
+          </button>
         </div>
 
-        <div className="flex justify-between items-end pb-8">
-          {/* Left/Right Controls */}
-          <div className="flex gap-4">
-            <button 
-              className="w-24 h-24 bg-slate-800 rounded-2xl border-b-4 border-slate-950 active:border-b-0 active:translate-y-1 flex items-center justify-center text-4xl shadow-lg"
-              onMouseDown={handleTouchStart('Left')}
-              onMouseUp={handleTouchEnd('Left')}
-              onMouseLeave={handleTouchEnd('Left')}
-              onTouchStart={handleTouchStart('Left')}
-              onTouchEnd={handleTouchEnd('Left')}
-            >
-              ◀
-            </button>
-            <button 
-              className="w-24 h-24 bg-slate-800 rounded-2xl border-b-4 border-slate-950 active:border-b-0 active:translate-y-1 flex items-center justify-center text-4xl shadow-lg"
-              onMouseDown={handleTouchStart('Right')}
-              onMouseUp={handleTouchEnd('Right')}
-              onMouseLeave={handleTouchEnd('Right')}
-              onTouchStart={handleTouchStart('Right')}
-              onTouchEnd={handleTouchEnd('Right')}
-            >
-              ▶
-            </button>
-          </div>
-
-          {/* Action Controls */}
-          <div className="flex gap-4">
-            <div className="flex flex-col gap-4">
-              <button 
-                className="w-20 h-20 bg-red-600 rounded-full border-b-4 border-red-900 active:border-b-0 active:translate-y-1 flex items-center justify-center font-bold shadow-lg"
-                onMouseDown={handleTouchStart('Brake')}
-                onMouseUp={handleTouchEnd('Brake')}
-                onMouseLeave={handleTouchEnd('Brake')}
-                onTouchStart={handleTouchStart('Brake')}
-                onTouchEnd={handleTouchEnd('Brake')}
-              >
-                BRAKE
-              </button>
-              <button 
-                className="w-20 h-20 bg-blue-500 rounded-full border-b-4 border-blue-800 active:border-b-0 active:translate-y-1 flex items-center justify-center font-bold shadow-lg"
-                onMouseDown={handleTouchStart('Nitro')}
-                onMouseUp={handleTouchEnd('Nitro')}
-                onMouseLeave={handleTouchEnd('Nitro')}
-                onTouchStart={handleTouchStart('Nitro')}
-                onTouchEnd={handleTouchEnd('Nitro')}
-              >
-                NITRO
-              </button>
-            </div>
-            <button 
-              className="w-24 h-44 bg-green-500 rounded-full border-b-4 border-green-800 active:border-b-0 active:translate-y-1 flex items-center justify-center font-bold text-xl shadow-lg"
-              onMouseDown={handleTouchStart('Forward')}
-              onMouseUp={handleTouchEnd('Forward')}
-              onMouseLeave={handleTouchEnd('Forward')}
-              onTouchStart={handleTouchStart('Forward')}
-              onTouchEnd={handleTouchEnd('Forward')}
-            >
-              GAS
-            </button>
-          </div>
+        {/* Right Controls */}
+        <div className="absolute right-6 top-16 bottom-6 w-24 flex flex-col justify-between pointer-events-auto">
+          <button 
+            className="w-full h-20 bg-green-500/80 rounded-2xl border-b-4 border-green-800 active:border-b-0 active:translate-y-1 flex items-center justify-center font-bold text-xl shadow-lg backdrop-blur-sm"
+            onMouseDown={handleTouchStart('Forward')}
+            onMouseUp={handleTouchEnd('Forward')}
+            onMouseLeave={handleTouchEnd('Forward')}
+            onTouchStart={handleTouchStart('Forward')}
+            onTouchEnd={handleTouchEnd('Forward')}
+          >
+            GAS
+          </button>
+          <button 
+            className="w-full h-24 bg-slate-800/80 rounded-2xl border-b-4 border-slate-950 active:border-b-0 active:translate-y-1 flex items-center justify-center text-4xl shadow-lg backdrop-blur-sm"
+            onMouseDown={handleTouchStart('Right')}
+            onMouseUp={handleTouchEnd('Right')}
+            onMouseLeave={handleTouchEnd('Right')}
+            onTouchStart={handleTouchStart('Right')}
+            onTouchEnd={handleTouchEnd('Right')}
+          >
+            ▶
+          </button>
+          <button 
+            className="w-full h-20 bg-red-600/80 rounded-2xl border-b-4 border-red-900 active:border-b-0 active:translate-y-1 flex items-center justify-center font-bold shadow-lg backdrop-blur-sm"
+            onMouseDown={handleTouchStart('Brake')}
+            onMouseUp={handleTouchEnd('Brake')}
+            onMouseLeave={handleTouchEnd('Brake')}
+            onTouchStart={handleTouchStart('Brake')}
+            onTouchEnd={handleTouchEnd('Brake')}
+          >
+            BRK
+          </button>
         </div>
+
+        {/* Center Nitro */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 pointer-events-auto">
+          <button 
+            className="w-28 h-28 bg-blue-500/90 rounded-full border-b-4 border-blue-800 active:border-b-0 active:translate-y-1 flex items-center justify-center font-bold shadow-lg backdrop-blur-sm text-xl"
+            onMouseDown={handleTouchStart('Nitro')}
+            onMouseUp={handleTouchEnd('Nitro')}
+            onMouseLeave={handleTouchEnd('Nitro')}
+            onTouchStart={handleTouchStart('Nitro')}
+            onTouchEnd={handleTouchEnd('Nitro')}
+          >
+            NITRO
+          </button>
+        </div>
+
       </div>
     </div>
   );
