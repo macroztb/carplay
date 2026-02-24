@@ -60,20 +60,31 @@ async function startServer() {
     { name: 'Pink', value: 'hsl(330, 70%, 50%)' },
   ];
 
-  const createPlayer = (id: string, colorInfo: { name: string, value: string }): Player => ({
-    id,
-    x: 650 + (Math.random() * 40 - 20),
-    y: 750 + (Math.random() * 20 - 10),
-    angle: Math.PI,
-    color: colorInfo.value,
-    name: colorInfo.name,
-    speed: 0,
-    laps: 0,
-    bestLapTime: Infinity,
-    lastLapStart: Date.now(),
-    nitro: 100,
-    drifting: false,
-  });
+  const createPlayer = (id: string, colorInfo: { name: string, value: string }, index: number): Player => {
+    // Starting line is around x=625, y=750, angle=Math.PI (facing left)
+    // We want them side-by-side along the y-axis
+    // index 0: y=735
+    // index 1: y=745
+    // index 2: y=755
+    // index 3: y=765
+    const startY = 735 + (index * 10);
+    const startX = 650; // slightly behind the finish line
+
+    return {
+      id,
+      x: startX,
+      y: startY,
+      angle: Math.PI,
+      color: colorInfo.value,
+      name: colorInfo.name,
+      speed: 0,
+      laps: 0,
+      bestLapTime: Infinity,
+      lastLapStart: Date.now(),
+      nitro: 100,
+      drifting: false,
+    };
+  };
 
   // Socket.io Logic
   io.on("connection", (socket) => {
@@ -115,7 +126,8 @@ async function startServer() {
         const usedColors = Object.values(room.players).map(p => p.name);
         const availableColor = COLORS.find(c => !usedColors.includes(c.name)) || COLORS[Math.floor(Math.random() * COLORS.length)];
         
-        const newPlayer = createPlayer(socket.id, availableColor);
+        const playerIndex = Object.keys(room.players).length;
+        const newPlayer = createPlayer(socket.id, availableColor, playerIndex);
         
         room.players[socket.id] = newPlayer;
         socketRoomMap[socket.id] = cleanRoomId;
