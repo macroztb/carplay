@@ -227,23 +227,11 @@ export default function App() {
                     </div>
                 </div>
 
-                {isHost ? (
-                    <button
-                        onClick={handleStartGame}
-                        disabled={Object.keys(players).length < maxPlayers}
-                        className={`w-full font-bold py-4 rounded-xl shadow-lg text-xl tracking-wide transition-transform ${
-                          Object.keys(players).length < maxPlayers 
-                            ? 'bg-slate-600 text-slate-400 cursor-not-allowed' 
-                            : 'bg-green-600 hover:bg-green-500 text-white active:scale-95 animate-pulse'
-                        }`}
-                    >
-                        {Object.keys(players).length < maxPlayers ? 'WAITING FOR PLAYERS...' : 'START RACE'}
-                    </button>
-                ) : (
-                    <div className="text-center text-slate-400 italic animate-pulse">
-                        Waiting for host to start the race...
-                    </div>
-                )}
+                <div className="text-center text-slate-400 italic animate-pulse bg-slate-700/50 p-4 rounded-xl border border-slate-600">
+                    {Object.keys(players).length < maxPlayers 
+                        ? `Waiting for ${maxPlayers - Object.keys(players).length} more player(s)...` 
+                        : 'Starting race...'}
+                </div>
             </div>
         )}
       </main>
