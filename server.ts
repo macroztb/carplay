@@ -95,7 +95,7 @@ async function startServer() {
       const roomId = generateRoomCode();
       const maxPlayers = payload?.maxPlayers || 4;
       
-      const room: Room = {
+      rooms[roomId] = {
         id: roomId,
         players: {},
         status: 'waiting',
@@ -103,20 +103,10 @@ async function startServer() {
         maxPlayers
       };
       
-      const availableColor = COLORS[Math.floor(Math.random() * COLORS.length)];
-      const newPlayer = createPlayer(socket.id, availableColor, 0);
-      room.players[socket.id] = newPlayer;
-
-      rooms[roomId] = room;
       socketRoomMap[socket.id] = roomId;
       socket.join(roomId);
       
-      socket.emit("roomCreated", { roomId, players: room.players, isHost: true, maxPlayers });
-
-      if (maxPlayers === 1) {
-          room.status = 'racing';
-          io.to(roomId).emit("gameStarted", room.players);
-      }
+      socket.emit("roomCreated", { roomId, players: rooms[roomId].players, isHost: true, maxPlayers });
     });
 
     socket.on("joinRoom", (payload) => {
@@ -153,10 +143,6 @@ async function startServer() {
         // If the game is already racing, tell the joiner to start the game immediately
         if (room.status === 'racing') {
            socket.emit("gameStarted", room.players);
-        } else if (Object.keys(room.players).length === room.maxPlayers) {
-           // Auto-start when full
-           room.status = 'racing';
-           io.to(cleanRoomId).emit("gameStarted", room.players);
         }
       } else {
         console.log(`[JOIN] Failed for room '${cleanRoomId}'. Exists: ${!!rooms[cleanRoomId]}`);
