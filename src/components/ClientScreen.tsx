@@ -250,6 +250,9 @@ export default function ClientScreen({ initialPlayers }: { initialPlayers: Recor
 
   const handleTouchStart = (key: string) => (e: React.TouchEvent | React.MouseEvent) => {
     e.preventDefault();
+    if (!keys.current[key] && navigator.vibrate) {
+      navigator.vibrate(15);
+    }
     keys.current[key] = true;
   };
 
@@ -309,82 +312,89 @@ export default function ClientScreen({ initialPlayers }: { initialPlayers: Recor
       <div className="flex-1 relative w-full h-full p-4 pointer-events-none">
         
         {/* Left Controls */}
-        <div className="absolute left-6 top-16 bottom-6 w-24 flex flex-col justify-between pointer-events-auto">
+        <div className="absolute left-4 top-16 bottom-4 w-32 flex flex-col gap-2 pointer-events-auto">
           <button 
-            className="w-full h-20 bg-green-500/80 rounded-2xl border-b-4 border-green-800 active:border-b-0 active:translate-y-1 flex items-center justify-center font-bold text-xl shadow-lg backdrop-blur-sm"
+            className="flex-1 bg-green-500/80 rounded-2xl border-b-4 border-green-800 active:border-b-0 active:translate-y-1 flex items-center justify-center font-bold text-2xl shadow-lg backdrop-blur-sm"
             onMouseDown={handleTouchStart('Forward')}
             onMouseUp={handleTouchEnd('Forward')}
             onMouseLeave={handleTouchEnd('Forward')}
             onTouchStart={handleTouchStart('Forward')}
             onTouchEnd={handleTouchEnd('Forward')}
+            onTouchCancel={handleTouchEnd('Forward')}
           >
             GAS
           </button>
           <button 
-            className="w-full h-24 bg-slate-800/80 rounded-2xl border-b-4 border-slate-950 active:border-b-0 active:translate-y-1 flex items-center justify-center text-4xl shadow-lg backdrop-blur-sm"
+            className="flex-[1.5] bg-slate-800/80 rounded-2xl border-b-4 border-slate-950 active:border-b-0 active:translate-y-1 flex items-center justify-center text-5xl shadow-lg backdrop-blur-sm"
             onMouseDown={handleTouchStart('Left')}
             onMouseUp={handleTouchEnd('Left')}
             onMouseLeave={handleTouchEnd('Left')}
             onTouchStart={handleTouchStart('Left')}
             onTouchEnd={handleTouchEnd('Left')}
+            onTouchCancel={handleTouchEnd('Left')}
           >
             ◀
           </button>
           <button 
-            className="w-full h-20 bg-red-600/80 rounded-2xl border-b-4 border-red-900 active:border-b-0 active:translate-y-1 flex items-center justify-center font-bold shadow-lg backdrop-blur-sm"
+            className="flex-1 bg-red-600/80 rounded-2xl border-b-4 border-red-900 active:border-b-0 active:translate-y-1 flex items-center justify-center font-bold text-2xl shadow-lg backdrop-blur-sm"
             onMouseDown={handleTouchStart('Brake')}
             onMouseUp={handleTouchEnd('Brake')}
             onMouseLeave={handleTouchEnd('Brake')}
             onTouchStart={handleTouchStart('Brake')}
             onTouchEnd={handleTouchEnd('Brake')}
+            onTouchCancel={handleTouchEnd('Brake')}
           >
             BRK
           </button>
         </div>
 
         {/* Right Controls */}
-        <div className="absolute right-6 top-16 bottom-6 w-24 flex flex-col justify-between pointer-events-auto">
+        <div className="absolute right-4 top-16 bottom-4 w-32 flex flex-col gap-2 pointer-events-auto">
           <button 
-            className="w-full h-20 bg-green-500/80 rounded-2xl border-b-4 border-green-800 active:border-b-0 active:translate-y-1 flex items-center justify-center font-bold text-xl shadow-lg backdrop-blur-sm"
+            className="flex-1 bg-green-500/80 rounded-2xl border-b-4 border-green-800 active:border-b-0 active:translate-y-1 flex items-center justify-center font-bold text-2xl shadow-lg backdrop-blur-sm"
             onMouseDown={handleTouchStart('Forward')}
             onMouseUp={handleTouchEnd('Forward')}
             onMouseLeave={handleTouchEnd('Forward')}
             onTouchStart={handleTouchStart('Forward')}
             onTouchEnd={handleTouchEnd('Forward')}
+            onTouchCancel={handleTouchEnd('Forward')}
           >
             GAS
           </button>
           <button 
-            className="w-full h-24 bg-slate-800/80 rounded-2xl border-b-4 border-slate-950 active:border-b-0 active:translate-y-1 flex items-center justify-center text-4xl shadow-lg backdrop-blur-sm"
+            className="flex-[1.5] bg-slate-800/80 rounded-2xl border-b-4 border-slate-950 active:border-b-0 active:translate-y-1 flex items-center justify-center text-5xl shadow-lg backdrop-blur-sm"
             onMouseDown={handleTouchStart('Right')}
             onMouseUp={handleTouchEnd('Right')}
             onMouseLeave={handleTouchEnd('Right')}
             onTouchStart={handleTouchStart('Right')}
             onTouchEnd={handleTouchEnd('Right')}
+            onTouchCancel={handleTouchEnd('Right')}
           >
             ▶
           </button>
           <button 
-            className="w-full h-20 bg-red-600/80 rounded-2xl border-b-4 border-red-900 active:border-b-0 active:translate-y-1 flex items-center justify-center font-bold shadow-lg backdrop-blur-sm"
+            className="flex-1 bg-red-600/80 rounded-2xl border-b-4 border-red-900 active:border-b-0 active:translate-y-1 flex items-center justify-center font-bold text-2xl shadow-lg backdrop-blur-sm"
             onMouseDown={handleTouchStart('Brake')}
             onMouseUp={handleTouchEnd('Brake')}
             onMouseLeave={handleTouchEnd('Brake')}
             onTouchStart={handleTouchStart('Brake')}
             onTouchEnd={handleTouchEnd('Brake')}
+            onTouchCancel={handleTouchEnd('Brake')}
           >
             BRK
           </button>
         </div>
 
         {/* Center Nitro */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 pointer-events-auto">
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 pointer-events-auto">
           <button 
-            className="w-28 h-28 bg-blue-500/90 rounded-full border-b-4 border-blue-800 active:border-b-0 active:translate-y-1 flex items-center justify-center font-bold shadow-lg backdrop-blur-sm text-xl"
+            className="w-32 h-32 bg-blue-500/90 rounded-full border-b-4 border-blue-800 active:border-b-0 active:translate-y-1 flex items-center justify-center font-bold shadow-lg backdrop-blur-sm text-2xl"
             onMouseDown={handleTouchStart('Nitro')}
             onMouseUp={handleTouchEnd('Nitro')}
             onMouseLeave={handleTouchEnd('Nitro')}
             onTouchStart={handleTouchStart('Nitro')}
             onTouchEnd={handleTouchEnd('Nitro')}
+            onTouchCancel={handleTouchEnd('Nitro')}
           >
             NITRO
           </button>
