@@ -241,11 +241,11 @@ const GameScene = ({
 
   return (
     <>
-      <ambientLight intensity={0.3} />
-      <hemisphereLight skyColor="#ffffff" groundColor="#444444" intensity={0.6} />
+      <ambientLight intensity={0.8} />
+      <hemisphereLight skyColor="#ffffff" groundColor="#ffffff" intensity={1.0} />
       <directionalLight 
         position={[600, 300, 425]} 
-        intensity={1.2} 
+        intensity={1.5} 
         castShadow 
         shadow-mapSize={[2048, 2048]}
         shadow-camera-left={-700}
