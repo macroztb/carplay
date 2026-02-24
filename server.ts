@@ -35,6 +35,7 @@ async function startServer() {
     players: Record<string, Player>;
     status: 'waiting' | 'racing';
     hostId: string;
+    maxPlayers: number;
   };
 
   const rooms: Record<string, Room> = {};
@@ -79,20 +80,22 @@ async function startServer() {
     console.log(`Player connected: ${socket.id}`);
 
     // Room Management
-    socket.on("createRoom", () => {
+    socket.on("createRoom", (payload) => {
       const roomId = generateRoomCode();
+      const maxPlayers = payload?.maxPlayers || 4;
       
       rooms[roomId] = {
         id: roomId,
         players: {},
         status: 'waiting',
-        hostId: socket.id
+        hostId: socket.id,
+        maxPlayers
       };
       
       socketRoomMap[socket.id] = roomId;
       socket.join(roomId);
       
-      socket.emit("roomCreated", { roomId, players: rooms[roomId].players, isHost: true });
+      socket.emit("roomCreated", { roomId, players: rooms[roomId].players, isHost: true, maxPlayers });
     });
 
     socket.on("joinRoom", (payload) => {
@@ -103,6 +106,12 @@ async function startServer() {
 
       if (rooms[cleanRoomId]) {
         const room = rooms[cleanRoomId];
+        
+        if (Object.keys(room.players).length >= room.maxPlayers) {
+            socket.emit("error", "Room is full");
+            return;
+        }
+
         const usedColors = Object.values(room.players).map(p => p.name);
         const availableColor = COLORS.find(c => !usedColors.includes(c.name)) || COLORS[Math.floor(Math.random() * COLORS.length)];
         
@@ -114,7 +123,7 @@ async function startServer() {
         
         console.log(`[JOIN] Player ${socket.id} successfully joined room ${cleanRoomId}`);
         // Notify the joiner
-        socket.emit("roomJoined", { roomId: cleanRoomId, players: room.players, isHost: false });
+        socket.emit("roomJoined", { roomId: cleanRoomId, players: room.players, isHost: false, maxPlayers: room.maxPlayers });
         
         // Notify others in the room
         socket.to(cleanRoomId).emit("playerJoinedRoom", newPlayer);

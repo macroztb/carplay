@@ -3,7 +3,7 @@ import { socket } from '../services/socket';
 import { Player } from '../types';
 import GameRenderer from './GameRenderer';
 
-export default function HostScreen({ initialPlayers }: { initialPlayers: Record<string, Player> }) {
+export default function HostScreen({ initialPlayers, countdown }: { initialPlayers: Record<string, Player>, countdown: number | null }) {
   const [players, setPlayers] = useState<Record<string, Player>>(initialPlayers);
 
   useEffect(() => {
@@ -67,7 +67,14 @@ export default function HostScreen({ initialPlayers }: { initialPlayers: Record<
   };
 
   return (
-    <div className="w-full h-screen bg-slate-900 flex flex-col">
+    <div className="w-full h-screen bg-slate-900 flex flex-col relative">
+      {countdown !== null && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm pointer-events-none">
+          <div className="text-[15vw] font-black italic text-transparent bg-clip-text bg-gradient-to-b from-yellow-300 to-orange-600 drop-shadow-[0_0_50px_rgba(255,165,0,0.8)] animate-bounce">
+            {countdown > 0 ? countdown : 'GO!'}
+          </div>
+        </div>
+      )}
       <div className="p-4 bg-slate-800 text-white flex justify-between items-center shadow-md z-10">
         <h1 className="text-2xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 transform -skew-x-12">
           TURBO RACE - HOST VIEW

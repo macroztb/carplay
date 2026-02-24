@@ -6,7 +6,7 @@ import {
   TRACK_SEGMENTS, TRACK_RADIUS, getClosestPointOnSegment, distToSegment 
 } from '../gameConstants';
 
-export default function ClientScreen({ initialPlayers }: { initialPlayers: Record<string, Player> }) {
+export default function ClientScreen({ initialPlayers, countdown }: { initialPlayers: Record<string, Player>, countdown: number | null }) {
   const [myId, setMyId] = useState<string | null>(socket.id || null);
   const [laps, setLaps] = useState(0);
   const [currentLapStart, setCurrentLapStart] = useState<number>(Date.now());
@@ -72,16 +72,20 @@ export default function ClientScreen({ initialPlayers }: { initialPlayers: Recor
       const oldY = p.y;
       
       // Acceleration
-      if (keys.current['ArrowUp'] || keys.current['KeyW'] || keys.current['Forward']) {
-        p.speed += ACCELERATION;
-      } else if (keys.current['ArrowDown'] || keys.current['KeyS'] || keys.current['Brake']) {
-        p.speed -= ACCELERATION;
+      if (countdown === null) {
+        if (keys.current['ArrowUp'] || keys.current['KeyW'] || keys.current['Forward']) {
+          p.speed += ACCELERATION;
+        } else if (keys.current['ArrowDown'] || keys.current['KeyS'] || keys.current['Brake']) {
+          p.speed -= ACCELERATION;
+        } else {
+          p.speed *= FRICTION;
+        }
       } else {
         p.speed *= FRICTION;
       }
 
       // Nitro
-      if ((keys.current['ShiftLeft'] || keys.current['ShiftRight'] || keys.current['Nitro']) && p.nitro > 0) {
+      if (countdown === null && (keys.current['ShiftLeft'] || keys.current['ShiftRight'] || keys.current['Nitro']) && p.nitro > 0) {
           p.speed += NITRO_ACCEL;
           p.nitro = Math.max(0, p.nitro - 1);
       } else {
@@ -90,8 +94,8 @@ export default function ClientScreen({ initialPlayers }: { initialPlayers: Recor
       setNitro(p.nitro);
 
       // Drifting Logic
-      const isTurning = keys.current['ArrowLeft'] || keys.current['KeyA'] || keys.current['Left'] || keys.current['ArrowRight'] || keys.current['KeyD'] || keys.current['Right'];
-      const wantsDrift = keys.current['Space'] || keys.current['Drift'];
+      const isTurning = countdown === null && (keys.current['ArrowLeft'] || keys.current['KeyA'] || keys.current['Left'] || keys.current['ArrowRight'] || keys.current['KeyD'] || keys.current['Right']);
+      const wantsDrift = countdown === null && (keys.current['Space'] || keys.current['Drift']);
       
       if (wantsDrift && isTurning && Math.abs(p.speed) > 1.5) {
           p.drifting = true;
@@ -121,11 +125,13 @@ export default function ClientScreen({ initialPlayers }: { initialPlayers: Recor
             p.speed *= 0.98;
         }
 
-        if (keys.current['ArrowLeft'] || keys.current['KeyA'] || keys.current['Left']) {
-          p.angle -= turn;
-        }
-        if (keys.current['ArrowRight'] || keys.current['KeyD'] || keys.current['Right']) {
-          p.angle += turn;
+        if (countdown === null) {
+          if (keys.current['ArrowLeft'] || keys.current['KeyA'] || keys.current['Left']) {
+            p.angle -= turn;
+          }
+          if (keys.current['ArrowRight'] || keys.current['KeyD'] || keys.current['Right']) {
+            p.angle += turn;
+          }
         }
       }
 
@@ -234,7 +240,7 @@ export default function ClientScreen({ initialPlayers }: { initialPlayers: Recor
     return () => {
       cancelAnimationFrame(animationFrameId);
     };
-  }, [currentLapStart]);
+  }, [currentLapStart, countdown]);
 
   // Keyboard support for testing
   useEffect(() => {
@@ -272,9 +278,42 @@ export default function ClientScreen({ initialPlayers }: { initialPlayers: Recor
 
   const [currentTime, setCurrentTime] = useState(0);
   useEffect(() => {
+    if (countdown !== null) return;
     const interval = setInterval(() => setCurrentTime(Date.now() - currentLapStart), 50);
     return () => clearInterval(interval);
-  }, [currentLapStart]);
+  }, [currentLapStart, countdown]);
+
+  useEffect(() => {
+    if (countdown === 0) {
+      setCurrentLapStart(Date.now());
+    }
+  }, [countdown]);
+
+  // Audio cues for countdown
+  useEffect(() => {
+    if (countdown !== null) {
+      const isGo = countdown === 0;
+      const freq = isGo ? 880 : 440;
+      const duration = isGo ? 0.5 : 0.1;
+      
+      try {
+        const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+        const ctx = new AudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        gain.gain.setValueAtTime(0.1, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+      } catch (e) {
+        // Audio context might be blocked by browser policy, ignore
+      }
+    }
+  }, [countdown]);
 
   return (
     <div className="force-landscape bg-slate-900 flex flex-col text-white select-none touch-none">
@@ -294,9 +333,17 @@ export default function ClientScreen({ initialPlayers }: { initialPlayers: Recor
         </div>
       </div>
 
-      {wrongWay && (
+      {wrongWay && countdown === null && (
         <div className="absolute top-20 left-1/2 -translate-x-1/2 bg-red-600 text-white px-6 py-2 rounded-full font-bold animate-pulse z-50 shadow-lg">
           WRONG WAY!
+        </div>
+      )}
+
+      {countdown !== null && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm pointer-events-none">
+          <div className="text-9xl font-black italic text-transparent bg-clip-text bg-gradient-to-b from-yellow-300 to-orange-600 drop-shadow-[0_0_30px_rgba(255,165,0,0.8)] animate-bounce">
+            {countdown > 0 ? countdown : 'GO!'}
+          </div>
         </div>
       )}
 

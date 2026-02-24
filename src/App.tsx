@@ -21,20 +21,24 @@ export default function App() {
   const [players, setPlayers] = useState<Record<string, Player>>({});
   const [isHost, setIsHost] = useState(false);
   const [error, setError] = useState('');
+  const [maxPlayers, setMaxPlayers] = useState(4);
+  const [countdown, setCountdown] = useState<number | null>(null);
 
   useEffect(() => {
-    socket.on('roomCreated', ({ roomId, players, isHost }) => {
+    socket.on('roomCreated', ({ roomId, players, isHost, maxPlayers: mp }) => {
       setRoomCode(roomId);
       setPlayers(players);
       setIsHost(isHost);
+      setMaxPlayers(mp);
       setView('lobby');
       setError('');
     });
 
-    socket.on('roomJoined', ({ roomId, players, isHost }) => {
+    socket.on('roomJoined', ({ roomId, players, isHost, maxPlayers: mp }) => {
       setRoomCode(roomId);
       setPlayers(players);
       setIsHost(isHost);
+      setMaxPlayers(mp);
       setView('lobby');
       setError('');
     });
@@ -54,6 +58,7 @@ export default function App() {
     socket.on('gameStarted', (initialPlayers) => {
       setPlayers(initialPlayers);
       setView('game');
+      setCountdown(3);
     });
 
     socket.on('error', (msg) => {
@@ -92,8 +97,22 @@ export default function App() {
     };
   }, []);
 
+  useEffect(() => {
+    if (countdown !== null && countdown > 0) {
+      const timer = setTimeout(() => {
+        setCountdown(countdown - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else if (countdown === 0) {
+      const timer = setTimeout(() => {
+        setCountdown(null);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [countdown]);
+
   const handleCreate = () => {
-    socket.emit('createRoom');
+    socket.emit('createRoom', { maxPlayers });
   };
 
   const handleJoin = (e: React.FormEvent) => {
@@ -111,7 +130,7 @@ export default function App() {
   };
 
   if (view === 'game') {
-    return isHost ? <HostScreen initialPlayers={players} /> : <ClientScreen initialPlayers={players} />;
+    return isHost ? <HostScreen initialPlayers={players} countdown={countdown} /> : <ClientScreen initialPlayers={players} countdown={countdown} />;
   }
 
   return (
@@ -131,6 +150,20 @@ export default function App() {
               {error && <div className="text-red-400 text-sm text-center bg-red-900/20 p-2 rounded">{error}</div>}
 
               <div className="grid grid-cols-1 gap-4">
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-bold text-slate-400 uppercase">Max Players</label>
+                  <select 
+                    value={maxPlayers} 
+                    onChange={(e) => setMaxPlayers(Number(e.target.value))}
+                    className="bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 text-white font-bold focus:ring-2 focus:ring-yellow-500 outline-none"
+                  >
+                    <option value={1}>1 Player (Practice)</option>
+                    <option value={2}>2 Players</option>
+                    <option value={3}>3 Players</option>
+                    <option value={4}>4 Players</option>
+                  </select>
+                </div>
+
                 <button
                   onClick={handleCreate}
                   className="w-full bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-400 hover:to-orange-500 text-black font-bold py-3 rounded-lg shadow-lg transition-transform active:scale-95"
@@ -180,7 +213,7 @@ export default function App() {
 
                 <div className="mb-8">
                     <h3 className="text-lg font-bold mb-4 flex justify-between items-center">
-                        <span>Racers ({Object.keys(players).length})</span>
+                        <span>Racers ({Object.keys(players).length} / {maxPlayers})</span>
                         {isHost && <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded">You are Host</span>}
                     </h3>
                     <div className="grid grid-cols-2 gap-3">
@@ -197,9 +230,14 @@ export default function App() {
                 {isHost ? (
                     <button
                         onClick={handleStartGame}
-                        className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-xl shadow-lg text-xl tracking-wide transition-transform active:scale-95 animate-pulse"
+                        disabled={Object.keys(players).length < maxPlayers}
+                        className={`w-full font-bold py-4 rounded-xl shadow-lg text-xl tracking-wide transition-transform ${
+                          Object.keys(players).length < maxPlayers 
+                            ? 'bg-slate-600 text-slate-400 cursor-not-allowed' 
+                            : 'bg-green-600 hover:bg-green-500 text-white active:scale-95 animate-pulse'
+                        }`}
                     >
-                        START RACE
+                        {Object.keys(players).length < maxPlayers ? 'WAITING FOR PLAYERS...' : 'START RACE'}
                     </button>
                 ) : (
                     <div className="text-center text-slate-400 italic animate-pulse">
