@@ -104,6 +104,32 @@ const Rock = ({ position, scale = 1 }: { position: [number, number, number], sca
   );
 };
 
+const Building = ({ position, scale = 1, height = 10 }: { position: [number, number, number], scale?: number, height?: number }) => {
+  const isGlass = useMemo(() => Math.random() > 0.5, []);
+  const color = useMemo(() => {
+    const colors = ['#1e293b', '#334155', '#475569', '#0f172a'];
+    return colors[Math.floor(Math.random() * colors.length)];
+  }, []);
+
+  return (
+    <group position={position} scale={scale}>
+      <mesh position={[0, height / 2, 0]} castShadow receiveShadow>
+        <boxGeometry args={[4, height, 4]} />
+        <meshStandardMaterial 
+          color={color} 
+          roughness={isGlass ? 0.1 : 0.8} 
+          metalness={isGlass ? 0.8 : 0.2} 
+        />
+      </mesh>
+      {/* Roof detail */}
+      <mesh position={[0, height + 0.5, 0]} castShadow>
+        <boxGeometry args={[3.5, 1, 3.5]} />
+        <meshStandardMaterial color="#0f172a" />
+      </mesh>
+    </group>
+  );
+};
+
 const TrackMesh = () => {
   const segments = useMemo(() => {
     return TRACK_SEGMENTS.map((seg, i) => {
@@ -160,8 +186,8 @@ const GameScene = ({
   const { camera } = useThree();
 
   const decorations = useMemo(() => {
-    const items: { type: 'tree' | 'rock', pos: [number, number, number], scale: number }[] = [];
-    const count = 350;
+    const items: { type: 'tree' | 'rock' | 'building', pos: [number, number, number], scale: number, height?: number }[] = [];
+    const count = 450;
     const seed = 42;
     const rng = (s: number) => {
         const x = Math.sin(s) * 10000;
@@ -173,10 +199,25 @@ const GameScene = ({
       const x = rng(s++) * 2400 - 800; 
       const z = rng(s++) * 2200 - 800;
       
-      if (!isPointOnTrackMath(x, z, 20)) {
-        const type = rng(s++) > 0.4 ? 'tree' : 'rock';
-        const scale = type === 'tree' ? 2.5 + rng(s++) * 3.5 : 3 + rng(s++) * 5;
-        items.push({ type, pos: [x, 0, z], scale });
+      if (!isPointOnTrackMath(x, z, 30)) {
+        const rand = rng(s++);
+        let type: 'tree' | 'rock' | 'building';
+        let scale = 1;
+        let height = 10;
+
+        if (rand > 0.7) {
+          type = 'building';
+          scale = 3 + rng(s++) * 4;
+          height = 15 + rng(s++) * 40;
+        } else if (rand > 0.3) {
+          type = 'tree';
+          scale = 2.5 + rng(s++) * 3.5;
+        } else {
+          type = 'rock';
+          scale = 3 + rng(s++) * 5;
+        }
+        
+        items.push({ type, pos: [x, 0, z], scale, height });
       }
     }
     return items;
@@ -200,28 +241,29 @@ const GameScene = ({
 
   return (
     <>
-      <ambientLight intensity={0.5} />
+      <ambientLight intensity={0.3} />
+      <hemisphereLight skyColor="#ffffff" groundColor="#444444" intensity={0.6} />
       <directionalLight 
         position={[600, 300, 425]} 
-        intensity={1} 
+        intensity={1.2} 
         castShadow 
-        shadow-mapSize={[1024, 1024]}
+        shadow-mapSize={[2048, 2048]}
         shadow-camera-left={-700}
         shadow-camera-right={700}
         shadow-camera-top={700}
         shadow-camera-bottom={-700}
-        shadow-camera-far={1000}
+        shadow-camera-far={1500}
+        shadow-bias={-0.0001}
       />
       
       <TrackMesh />
       
-      {decorations.map((item, i) => (
-        item.type === 'tree' ? (
-          <Tree key={i} position={item.pos} scale={item.scale} />
-        ) : (
-          <Rock key={i} position={item.pos} scale={item.scale} />
-        )
-      ))}
+      {decorations.map((item, i) => {
+        if (item.type === 'tree') return <Tree key={i} position={item.pos} scale={item.scale} />;
+        if (item.type === 'rock') return <Rock key={i} position={item.pos} scale={item.scale} />;
+        if (item.type === 'building') return <Building key={i} position={item.pos} scale={item.scale} height={item.height} />;
+        return null;
+      })}
       
       {Object.values(players).map(p => {
         return (
