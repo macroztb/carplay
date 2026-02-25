@@ -107,6 +107,11 @@ async function startServer() {
       socket.join(roomId);
       
       socket.emit("roomCreated", { roomId, players: rooms[roomId].players, isHost: true, maxPlayers });
+
+      if (maxPlayers === 1) {
+          rooms[roomId].status = 'racing';
+          socket.emit("gameStarted", rooms[roomId].players);
+      }
     });
 
     socket.on("joinRoom", (payload) => {
@@ -140,8 +145,11 @@ async function startServer() {
         // Notify others in the room
         socket.to(cleanRoomId).emit("playerJoinedRoom", newPlayer);
 
-        // If the game is already racing, tell the joiner to start the game immediately
-        if (room.status === 'racing') {
+        if (room.status === 'waiting' && Object.keys(room.players).length >= room.maxPlayers) {
+            room.status = 'racing';
+            io.to(cleanRoomId).emit("gameStarted", room.players);
+        } else if (room.status === 'racing') {
+           // If the game is already racing, tell the joiner to start the game immediately
            socket.emit("gameStarted", room.players);
         }
       } else {
