@@ -2,11 +2,11 @@ export const TRACK_WIDTH = 1200;
 export const TRACK_HEIGHT = 850;
 
 // Car physics constants
-export const ACCELERATION = 0.06;
-export const MAX_SPEED = 2.4;
-export const NITRO_SPEED = 4.125;
-export const NITRO_ACCEL = 0.12;
-export const FRICTION = 0.97;
+export const ACCELERATION = 0.04;
+export const MAX_SPEED = 1.8;
+export const NITRO_SPEED = 3.2;
+export const NITRO_ACCEL = 0.08;
+export const FRICTION = 0.96;
 export const TURN_SPEED = 0.035;
 export const DRIFT_FACTOR = 0.94;
 

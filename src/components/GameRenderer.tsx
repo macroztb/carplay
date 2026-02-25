@@ -8,7 +8,7 @@ import { TRACK_WIDTH, TRACK_HEIGHT, TRACK_RADIUS, TRACK_SEGMENTS, isPointOnTrack
 // 3D Components
 const CarModel = ({ color, isLocal, drifting }: { color: string, isLocal?: boolean, drifting?: boolean }) => {
   return (
-    <group scale={[2, 2, 2]}>
+    <group scale={[4, 4, 4]}>
       {/* Body */}
       <mesh position={[0, 0.5, 0]} castShadow receiveShadow>
         <boxGeometry args={[2, 1, 4]} />
@@ -269,7 +269,7 @@ const GameScene = ({
         return (
           <group key={p.id} position={[p.x, 0, p.y]} rotation={[0, -p.angle + Math.PI/2, 0]}>
             <CarModel color={p.color} drifting={p.drifting} isLocal={p.id === followId} />
-            <Text position={[0, 3, 0]} fontSize={2} color="white" anchorX="center" anchorY="middle">
+            <Text position={[0, 10, 0]} fontSize={3} color="white" anchorX="center" anchorY="middle" outlineWidth={0.2} outlineColor="black">
               {p.name}
             </Text>
           </group>
