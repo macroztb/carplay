@@ -315,10 +315,34 @@ export default function ClientScreen({ initialPlayers, countdown }: { initialPla
     }
   }, [countdown]);
 
+  const BlockArrowLeft = () => (
+    <svg width="80" height="80" viewBox="0 0 100 100" fill="transparent" stroke="#22405D" strokeWidth="4" strokeLinejoin="round">
+      <polygon points="45,25 15,50 45,75 45,60 85,60 85,40 45,40" />
+    </svg>
+  );
+
+  const BlockArrowRight = () => (
+    <svg width="80" height="80" viewBox="0 0 100 100" fill="transparent" stroke="#22405D" strokeWidth="4" strokeLinejoin="round">
+      <polygon points="55,25 85,50 55,75 55,60 15,60 15,40 55,40" />
+    </svg>
+  );
+
+  const BlockArrowUp = () => (
+    <svg width="80" height="80" viewBox="0 0 100 100" fill="transparent" stroke="#22405D" strokeWidth="4" strokeLinejoin="round">
+      <polygon points="50,20 20,50 40,50 40,80 60,80 60,50 80,50" />
+    </svg>
+  );
+
+  const BlockArrowDown = () => (
+    <svg width="80" height="80" viewBox="0 0 100 100" fill="transparent" stroke="#22405D" strokeWidth="4" strokeLinejoin="round">
+      <polygon points="50,80 20,50 40,50 40,20 60,20 60,50 80,50" />
+    </svg>
+  );
+
   return (
-    <div className="force-landscape bg-slate-900 flex flex-col text-white select-none touch-none">
+    <div className="force-landscape flex flex-col text-white select-none touch-none" style={{ width: '100vw', height: '100vh', backgroundColor: '#000' }}>
       {/* HUD */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 flex gap-8 p-2 px-6 bg-slate-800/90 rounded-b-3xl border-b border-x border-slate-700 backdrop-blur-md z-10 shadow-lg">
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 flex gap-8 p-2 px-6 bg-slate-800/90 rounded-b-3xl border-b border-x border-slate-700 backdrop-blur-md z-10 shadow-lg pointer-events-none">
         <div className="text-center">
           <div className="text-[10px] text-slate-400 uppercase font-bold">Laps</div>
           <div className="text-xl font-black">{laps}</div>
@@ -334,7 +358,7 @@ export default function ClientScreen({ initialPlayers, countdown }: { initialPla
       </div>
 
       {wrongWay && countdown === null && (
-        <div className="absolute top-20 left-1/2 -translate-x-1/2 bg-red-600 text-white px-6 py-2 rounded-full font-bold animate-pulse z-50 shadow-lg">
+        <div className="absolute top-20 left-1/2 -translate-x-1/2 bg-red-600 text-white px-6 py-2 rounded-full font-bold animate-pulse z-50 shadow-lg pointer-events-none">
           WRONG WAY!
         </div>
       )}
@@ -348,106 +372,68 @@ export default function ClientScreen({ initialPlayers, countdown }: { initialPla
       )}
 
       {/* Nitro Bar */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-slate-800 z-20">
+      <div className="absolute top-0 left-0 right-0 h-1 bg-slate-800 z-20 pointer-events-none">
         <div 
           className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 transition-all duration-100"
           style={{ width: `${nitro}%` }}
         />
       </div>
 
-      {/* Controls */}
-      <div className="flex-1 relative w-full h-full p-4 pointer-events-none">
-        
-        {/* Left Controls */}
-        <div className="absolute left-4 top-16 bottom-4 w-32 flex flex-col gap-2 pointer-events-auto">
-          <button 
-            className="flex-1 bg-green-500/80 rounded-2xl border-b-4 border-green-800 active:border-b-0 active:translate-y-1 flex items-center justify-center font-bold text-2xl shadow-lg backdrop-blur-sm"
-            onMouseDown={handleTouchStart('Forward')}
-            onMouseUp={handleTouchEnd('Forward')}
-            onMouseLeave={handleTouchEnd('Forward')}
-            onTouchStart={handleTouchStart('Forward')}
-            onTouchEnd={handleTouchEnd('Forward')}
-            onTouchCancel={handleTouchEnd('Forward')}
-          >
-            GAS
-          </button>
-          <button 
-            className="flex-[1.5] bg-slate-800/80 rounded-2xl border-b-4 border-slate-950 active:border-b-0 active:translate-y-1 flex items-center justify-center text-5xl shadow-lg backdrop-blur-sm"
-            onMouseDown={handleTouchStart('Left')}
-            onMouseUp={handleTouchEnd('Left')}
-            onMouseLeave={handleTouchEnd('Left')}
-            onTouchStart={handleTouchStart('Left')}
-            onTouchEnd={handleTouchEnd('Left')}
-            onTouchCancel={handleTouchEnd('Left')}
-          >
-            ◀
-          </button>
-          <button 
-            className="flex-1 bg-red-600/80 rounded-2xl border-b-4 border-red-900 active:border-b-0 active:translate-y-1 flex items-center justify-center font-bold text-2xl shadow-lg backdrop-blur-sm"
-            onMouseDown={handleTouchStart('Brake')}
-            onMouseUp={handleTouchEnd('Brake')}
-            onMouseLeave={handleTouchEnd('Brake')}
-            onTouchStart={handleTouchStart('Brake')}
-            onTouchEnd={handleTouchEnd('Brake')}
-            onTouchCancel={handleTouchEnd('Brake')}
-          >
-            BRK
-          </button>
+      {/* Controls Layout */}
+      {/* Top Row */}
+      <div style={{ display: 'flex', flex: 1 }}>
+        <div 
+          style={{ flex: 1, backgroundColor: '#E87A3E', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRight: '2px solid #000', borderBottom: '2px solid #000' }}
+          onMouseDown={handleTouchStart('Brake')} onMouseUp={handleTouchEnd('Brake')} onMouseLeave={handleTouchEnd('Brake')}
+          onTouchStart={handleTouchStart('Brake')} onTouchEnd={handleTouchEnd('Brake')} onTouchCancel={handleTouchEnd('Brake')}
+        >
+          <BlockArrowLeft />
         </div>
-
-        {/* Right Controls */}
-        <div className="absolute right-4 top-16 bottom-4 w-32 flex flex-col gap-2 pointer-events-auto">
-          <button 
-            className="flex-1 bg-green-500/80 rounded-2xl border-b-4 border-green-800 active:border-b-0 active:translate-y-1 flex items-center justify-center font-bold text-2xl shadow-lg backdrop-blur-sm"
-            onMouseDown={handleTouchStart('Forward')}
-            onMouseUp={handleTouchEnd('Forward')}
-            onMouseLeave={handleTouchEnd('Forward')}
-            onTouchStart={handleTouchStart('Forward')}
-            onTouchEnd={handleTouchEnd('Forward')}
-            onTouchCancel={handleTouchEnd('Forward')}
-          >
-            GAS
-          </button>
-          <button 
-            className="flex-[1.5] bg-slate-800/80 rounded-2xl border-b-4 border-slate-950 active:border-b-0 active:translate-y-1 flex items-center justify-center text-5xl shadow-lg backdrop-blur-sm"
-            onMouseDown={handleTouchStart('Right')}
-            onMouseUp={handleTouchEnd('Right')}
-            onMouseLeave={handleTouchEnd('Right')}
-            onTouchStart={handleTouchStart('Right')}
-            onTouchEnd={handleTouchEnd('Right')}
-            onTouchCancel={handleTouchEnd('Right')}
-          >
-            ▶
-          </button>
-          <button 
-            className="flex-1 bg-red-600/80 rounded-2xl border-b-4 border-red-900 active:border-b-0 active:translate-y-1 flex items-center justify-center font-bold text-2xl shadow-lg backdrop-blur-sm"
-            onMouseDown={handleTouchStart('Brake')}
-            onMouseUp={handleTouchEnd('Brake')}
-            onMouseLeave={handleTouchEnd('Brake')}
-            onTouchStart={handleTouchStart('Brake')}
-            onTouchEnd={handleTouchEnd('Brake')}
-            onTouchCancel={handleTouchEnd('Brake')}
-          >
-            BRK
-          </button>
+        <div 
+          style={{ flex: 1, backgroundColor: '#5CD05A', display: 'flex', justifyContent: 'center', alignItems: 'center', borderBottom: '2px solid #000' }}
+          onMouseDown={handleTouchStart('Forward')} onMouseUp={handleTouchEnd('Forward')} onMouseLeave={handleTouchEnd('Forward')}
+          onTouchStart={handleTouchStart('Forward')} onTouchEnd={handleTouchEnd('Forward')} onTouchCancel={handleTouchEnd('Forward')}
+        >
+          <BlockArrowRight />
         </div>
-
-        {/* Center Nitro */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 pointer-events-auto">
-          <button 
-            className="w-32 h-32 bg-blue-500/90 rounded-full border-b-4 border-blue-800 active:border-b-0 active:translate-y-1 flex items-center justify-center font-bold shadow-lg backdrop-blur-sm text-2xl"
-            onMouseDown={handleTouchStart('Nitro')}
-            onMouseUp={handleTouchEnd('Nitro')}
-            onMouseLeave={handleTouchEnd('Nitro')}
-            onTouchStart={handleTouchStart('Nitro')}
-            onTouchEnd={handleTouchEnd('Nitro')}
-            onTouchCancel={handleTouchEnd('Nitro')}
-          >
-            NITRO
-          </button>
-        </div>
-
       </div>
+
+      {/* Middle Row */}
+      <div style={{ display: 'flex', height: '25vh', backgroundColor: '#000', justifyContent: 'space-around', alignItems: 'center' }}>
+        <div 
+          style={{ width: '18vh', height: '18vh', borderRadius: '50%', backgroundColor: '#FFF000', display: 'flex', justifyContent: 'center', alignItems: 'center', border: '4px solid #22405D' }}
+          onMouseDown={handleTouchStart('Nitro')} onMouseUp={handleTouchEnd('Nitro')} onMouseLeave={handleTouchEnd('Nitro')}
+          onTouchStart={handleTouchStart('Nitro')} onTouchEnd={handleTouchEnd('Nitro')} onTouchCancel={handleTouchEnd('Nitro')}
+        >
+          <span style={{ color: '#E87A3E', fontSize: '10vh', fontWeight: '900', transform: 'rotate(-90deg)', fontFamily: 'sans-serif' }}>B</span>
+        </div>
+        <div 
+          style={{ width: '18vh', height: '18vh', borderRadius: '50%', backgroundColor: '#63C5F1', display: 'flex', justifyContent: 'center', alignItems: 'center', border: '4px solid #22405D' }}
+          onMouseDown={handleTouchStart('Nitro')} onMouseUp={handleTouchEnd('Nitro')} onMouseLeave={handleTouchEnd('Nitro')}
+          onTouchStart={handleTouchStart('Nitro')} onTouchEnd={handleTouchEnd('Nitro')} onTouchCancel={handleTouchEnd('Nitro')}
+        >
+          <span style={{ color: '#22405D', fontSize: '10vh', fontWeight: '900', transform: 'rotate(-90deg)', fontFamily: 'sans-serif' }}>A</span>
+        </div>
+      </div>
+
+      {/* Bottom Row */}
+      <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+        <div 
+          style={{ flex: 1, backgroundColor: '#7030A0', display: 'flex', justifyContent: 'center', alignItems: 'center', borderTop: '2px solid #000', borderBottom: '2px solid #000' }}
+          onMouseDown={handleTouchStart('Left')} onMouseUp={handleTouchEnd('Left')} onMouseLeave={handleTouchEnd('Left')}
+          onTouchStart={handleTouchStart('Left')} onTouchEnd={handleTouchEnd('Left')} onTouchCancel={handleTouchEnd('Left')}
+        >
+          <BlockArrowUp />
+        </div>
+        <div 
+          style={{ flex: 1, backgroundColor: '#5E215B', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+          onMouseDown={handleTouchStart('Right')} onMouseUp={handleTouchEnd('Right')} onMouseLeave={handleTouchEnd('Right')}
+          onTouchStart={handleTouchStart('Right')} onTouchEnd={handleTouchEnd('Right')} onTouchCancel={handleTouchEnd('Right')}
+        >
+          <BlockArrowDown />
+        </div>
+      </div>
+
     </div>
   );
 }
