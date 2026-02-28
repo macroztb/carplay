@@ -269,7 +269,7 @@ const GameScene = ({
         return (
           <group key={p.id} position={[p.x, 0, p.y]} rotation={[0, -p.angle + Math.PI/2, 0]}>
             <CarModel color={p.color} drifting={p.drifting} isLocal={p.id === followId} />
-            <Text position={[0, 10, 0]} fontSize={3} color="white" anchorX="center" anchorY="middle" outlineWidth={0.2} outlineColor="black">
+            <Text position={[0, 10, 0]} rotation={[0, Math.PI, 0]} fontSize={3} color="white" anchorX="center" anchorY="middle" outlineWidth={0.2} outlineColor="black">
               {p.name}
             </Text>
           </group>
