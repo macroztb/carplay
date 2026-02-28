@@ -344,29 +344,29 @@ export default function ClientScreen({ initialPlayers, countdown }: { initialPla
       {/* HUD */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 flex gap-8 p-2 px-6 bg-slate-800/90 rounded-b-3xl border-b border-x border-slate-700 backdrop-blur-md z-10 shadow-lg pointer-events-none">
         <div className="text-center">
-          <div className="text-[10px] text-slate-400 uppercase font-bold">Laps</div>
+          <div className="text-[10px] text-slate-400 uppercase font-bold">圈数</div>
           <div className="text-xl font-black">{laps}</div>
         </div>
         <div className="text-center">
-          <div className="text-[10px] text-slate-400 uppercase font-bold">Time</div>
+          <div className="text-[10px] text-slate-400 uppercase font-bold">时间</div>
           <div className="text-xl font-mono font-bold text-yellow-400">{formatTime(currentTime)}</div>
         </div>
         <div className="text-center">
-          <div className="text-[10px] text-slate-400 uppercase font-bold">Best</div>
+          <div className="text-[10px] text-slate-400 uppercase font-bold">最佳</div>
           <div className="text-lg font-mono text-slate-300">{formatTime(bestLapTime)}</div>
         </div>
       </div>
 
       {wrongWay && countdown === null && (
         <div className="absolute top-20 left-1/2 -translate-x-1/2 bg-red-600 text-white px-6 py-2 rounded-full font-bold animate-pulse z-50 shadow-lg pointer-events-none">
-          WRONG WAY!
+          反向行驶！
         </div>
       )}
 
       {countdown !== null && (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm pointer-events-none">
           <div className="text-9xl font-black italic text-transparent bg-clip-text bg-gradient-to-b from-yellow-300 to-orange-600 drop-shadow-[0_0_30px_rgba(255,165,0,0.8)] animate-bounce">
-            {countdown > 0 ? countdown : 'GO!'}
+            {countdown > 0 ? countdown : '开始！'}
           </div>
         </div>
       )}

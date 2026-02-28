@@ -144,23 +144,23 @@ export default function App() {
       <main className={`flex-1 w-full flex flex-col items-center p-4 transition-all`}>
         {view === 'landing' && (
           <div className="bg-slate-800 p-8 rounded-2xl shadow-2xl border border-slate-700 max-w-md w-full">
-            <h2 className="text-2xl font-bold mb-6 text-center">Start Your Engines</h2>
+            <h2 className="text-2xl font-bold mb-6 text-center">启动引擎</h2>
             
             <div className="space-y-6">
               {error && <div className="text-red-400 text-sm text-center bg-red-900/20 p-2 rounded">{error}</div>}
 
               <div className="grid grid-cols-1 gap-4">
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-bold text-slate-400 uppercase">Max Players</label>
+                  <label className="text-sm font-bold text-slate-400 uppercase">最大玩家数</label>
                   <select 
                     value={maxPlayers} 
                     onChange={(e) => setMaxPlayers(Number(e.target.value))}
                     className="bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 text-white font-bold focus:ring-2 focus:ring-yellow-500 outline-none"
                   >
-                    <option value={1}>1 Player (Practice)</option>
-                    <option value={2}>2 Players</option>
-                    <option value={3}>3 Players</option>
-                    <option value={4}>4 Players</option>
+                    <option value={1}>1 人 (练习模式)</option>
+                    <option value={2}>2 人</option>
+                    <option value={3}>3 人</option>
+                    <option value={4}>4 人</option>
                   </select>
                 </div>
 
@@ -168,7 +168,7 @@ export default function App() {
                   onClick={handleCreate}
                   className="w-full bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-400 hover:to-orange-500 text-black font-bold py-3 rounded-lg shadow-lg transition-transform active:scale-95"
                 >
-                  CREATE RACE (HOST)
+                  创建房间 (作为房主)
                 </button>
                 
                 <div className="relative">
@@ -176,7 +176,7 @@ export default function App() {
                         <div className="w-full border-t border-slate-700"></div>
                     </div>
                     <div className="relative flex justify-center text-sm">
-                        <span className="px-2 bg-slate-800 text-slate-500">Or join as player</span>
+                        <span className="px-2 bg-slate-800 text-slate-500">或者加入游戏</span>
                     </div>
                 </div>
 
@@ -186,14 +186,14 @@ export default function App() {
                         value={joinCode}
                         onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
                         className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 text-white uppercase tracking-widest font-mono focus:ring-2 focus:ring-blue-500 outline-none"
-                        placeholder="CODE"
+                        placeholder="输入房间号"
                         maxLength={6}
                     />
                     <button
                         type="submit"
                         className="bg-blue-600 hover:bg-blue-500 text-white font-bold px-6 py-3 rounded-lg shadow-lg transition-transform active:scale-95"
                     >
-                        JOIN
+                        加入
                     </button>
                 </form>
               </div>
@@ -204,24 +204,24 @@ export default function App() {
         {view === 'lobby' && (
             <div className="bg-slate-800 p-8 rounded-2xl shadow-2xl border border-slate-700 max-w-2xl w-full">
                 <div className="text-center mb-8">
-                    <h2 className="text-xl text-slate-400 mb-2">Room Code</h2>
+                    <h2 className="text-xl text-slate-400 mb-2">房间号</h2>
                     <div className="text-6xl font-mono font-black tracking-widest text-yellow-400 bg-black/30 p-4 rounded-xl inline-block border-2 border-dashed border-slate-600 select-all">
                         {roomCode}
                     </div>
-                    <p className="text-sm text-slate-500 mt-2">Share this code with your friends!</p>
+                    <p className="text-sm text-slate-500 mt-2">将此房间号分享给你的朋友！</p>
                 </div>
 
                 <div className="mb-8">
                     <h3 className="text-lg font-bold mb-4 flex justify-between items-center">
-                        <span>Racers ({Object.keys(players).length} / {maxPlayers})</span>
-                        {isHost && <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded">You are Host</span>}
+                        <span>车手 ({Object.keys(players).length} / {maxPlayers})</span>
+                        {isHost && <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded">你是房主</span>}
                     </h3>
                     <div className="grid grid-cols-2 gap-3">
                         {Object.values(players).map(p => (
                             <div key={p.id} className="bg-slate-700/50 p-3 rounded-lg flex items-center gap-3 border border-slate-600">
                                 <div className="w-3 h-3 rounded-full" style={{ backgroundColor: p.color }}></div>
                                 <span className="font-bold truncate">{p.name}</span>
-                                {p.id === socket.id && <span className="text-xs text-slate-400">(You)</span>}
+                                {p.id === socket.id && <span className="text-xs text-slate-400">(你)</span>}
                             </div>
                         ))}
                     </div>
@@ -229,13 +229,13 @@ export default function App() {
 
                 {isHost ? (
                     <div className="text-center text-slate-400 italic animate-pulse">
-                        Waiting for players to join ({Object.keys(players).length} / {maxPlayers})...
+                        等待玩家加入 ({Object.keys(players).length} / {maxPlayers})...
                         <br/>
-                        Game will start automatically when full.
+                        人满后将自动开始游戏。
                     </div>
                 ) : (
                     <div className="text-center text-slate-400 italic animate-pulse">
-                        Waiting for more players to join ({Object.keys(players).length} / {maxPlayers})...
+                        等待更多玩家加入 ({Object.keys(players).length} / {maxPlayers})...
                     </div>
                 )}
             </div>
