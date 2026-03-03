@@ -3,7 +3,7 @@ import { socket } from '../services/socket';
 import { Player } from '../types';
 import { 
   ACCELERATION, MAX_SPEED, NITRO_SPEED, NITRO_ACCEL, FRICTION, TURN_SPEED, 
-  TRACK_SEGMENTS, TRACK_RADIUS, getClosestPointOnSegment, distToSegment 
+  TRACK_SEGMENTS, TRACK_RADIUS, getClosestPointOnSegment, distToSegment, TOTAL_LAPS 
 } from '../gameConstants';
 
 export default function ClientScreen({ initialPlayers, countdown }: { initialPlayers: Record<string, Player>, countdown: number | null }) {
@@ -349,7 +349,7 @@ export default function ClientScreen({ initialPlayers, countdown }: { initialPla
       <div className="absolute top-0 left-1/2 -translate-x-1/2 flex gap-8 p-2 px-6 bg-slate-800/90 rounded-b-3xl border-b border-x border-slate-700 backdrop-blur-md z-10 shadow-lg pointer-events-none">
         <div className="text-center">
           <div className="text-[10px] text-slate-400 uppercase font-bold">圈数</div>
-          <div className="text-xl font-black">{laps}</div>
+          <div className="text-xl font-black">{laps}/{TOTAL_LAPS}</div>
         </div>
         <div className="text-center">
           <div className="text-[10px] text-slate-400 uppercase font-bold">时间</div>

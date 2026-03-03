@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { socket } from '../services/socket';
 import { Player } from '../types';
 import GameRenderer from './GameRenderer';
+import { TOTAL_LAPS } from '../gameConstants';
 
 export default function HostScreen({ initialPlayers, countdown }: { initialPlayers: Record<string, Player>, countdown: number | null }) {
   const [players, setPlayers] = useState<Record<string, Player>>(initialPlayers);
@@ -84,7 +85,7 @@ export default function HostScreen({ initialPlayers, countdown }: { initialPlaye
             <div key={p.id} className="flex items-center gap-2 bg-slate-700 px-3 py-1 rounded-full">
               <div className="w-3 h-3 rounded-full" style={{ backgroundColor: p.color }}></div>
               <span className="font-bold text-sm">{p.name}</span>
-              <span className="text-xs text-slate-400 ml-2">Laps: {p.laps}</span>
+              <span className="text-xs text-slate-400 ml-2">Laps: {p.laps}/{TOTAL_LAPS}</span>
             </div>
           ))}
         </div>

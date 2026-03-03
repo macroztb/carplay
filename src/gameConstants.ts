@@ -9,6 +9,7 @@ export const NITRO_ACCEL = 0.08;
 export const FRICTION = 0.96;
 export const TURN_SPEED = 0.035;
 export const DRIFT_FACTOR = 0.94;
+export const TOTAL_LAPS = 3;
 
 // Track Geometry
 export const TRACK_RADIUS = 50; // Slightly narrower for more technical turns
