@@ -6,7 +6,22 @@ import { Player } from '../types';
 import { TRACK_WIDTH, TRACK_HEIGHT, TRACK_RADIUS, TRACK_SEGMENTS, isPointOnTrackMath } from '../gameConstants';
 
 // 3D Components
-const CarModel = ({ color, isLocal, drifting }: { color: string, isLocal?: boolean, drifting?: boolean }) => {
+const CarModel = ({ color, isLocal, drifting, isNitroActive }: { color: string, isLocal?: boolean, drifting?: boolean, isNitroActive?: boolean }) => {
+  const nitroRef = useRef<THREE.Mesh>(null);
+  
+  const roofColor = useMemo(() => {
+    const c = new THREE.Color(color);
+    c.lerp(new THREE.Color('white'), 0.2);
+    return c;
+  }, [color]);
+
+  useFrame((state) => {
+    if (nitroRef.current && isNitroActive) {
+      const scale = 1 + Math.sin(state.clock.elapsedTime * 20) * 0.2;
+      nitroRef.current.scale.set(scale, scale, scale * 1.5);
+    }
+  });
+
   return (
     <group scale={[4, 4, 4]}>
       {/* Body */}
@@ -17,7 +32,7 @@ const CarModel = ({ color, isLocal, drifting }: { color: string, isLocal?: boole
       {/* Cabin */}
       <mesh position={[0, 1.2, -0.5]} castShadow>
         <boxGeometry args={[1.8, 0.8, 2]} />
-        <meshStandardMaterial color="#333" />
+        <meshStandardMaterial color={roofColor} metalness={0.4} roughness={0.5} />
       </mesh>
       {/* Wheels */}
       <mesh position={[1.1, 0.4, 1.2]} rotation={[0, 0, Math.PI/2]}>
@@ -67,6 +82,25 @@ const CarModel = ({ color, isLocal, drifting }: { color: string, isLocal?: boole
              <meshBasicMaterial color="#aaa" transparent opacity={0.6} />
           </mesh>
         </>
+      )}
+
+      {/* Nitro Flames */}
+      {isNitroActive && (
+        <group position={[0, 0.4, -2.5]} rotation={[-Math.PI / 2, 0, 0]}>
+          <mesh ref={nitroRef}>
+            <coneGeometry args={[0.4, 1.5, 8]} />
+            <meshStandardMaterial color="#00ffff" emissive="#00ffff" emissiveIntensity={3} transparent opacity={0.8} />
+          </mesh>
+          <mesh position={[0.6, 0, 0]}>
+            <coneGeometry args={[0.2, 1, 8]} />
+            <meshStandardMaterial color="#00ffff" emissive="#00ffff" emissiveIntensity={3} transparent opacity={0.8} />
+          </mesh>
+          <mesh position={[-0.6, 0, 0]}>
+            <coneGeometry args={[0.2, 1, 8]} />
+            <meshStandardMaterial color="#00ffff" emissive="#00ffff" emissiveIntensity={3} transparent opacity={0.8} />
+          </mesh>
+          <pointLight color="#00ffff" intensity={5} distance={10} />
+        </group>
       )}
 
       {isLocal && (
@@ -268,7 +302,7 @@ const GameScene = ({
       {Object.values(players).map(p => {
         return (
           <group key={p.id} position={[p.x, 0, p.y]} rotation={[0, -p.angle + Math.PI/2, 0]}>
-            <CarModel color={p.color} drifting={p.drifting} isLocal={p.id === followId} />
+            <CarModel color={p.color} drifting={p.drifting} isNitroActive={p.isNitroActive} isLocal={p.id === followId} />
             <Text position={[0, 10, 0]} rotation={[0, Math.PI, 0]} fontSize={3} color="white" anchorX="center" anchorY="middle" outlineWidth={0.2} outlineColor="black">
               {p.name}
             </Text>

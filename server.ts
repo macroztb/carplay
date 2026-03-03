@@ -177,6 +177,7 @@ async function startServer() {
           player.angle = movementData.angle;
           player.speed = movementData.speed;
           player.nitro = movementData.nitro;
+          player.isNitroActive = movementData.isNitroActive;
           player.drifting = movementData.drifting;
           
           socket.to(roomId).emit("playerMoved", player);

@@ -25,6 +25,7 @@ export default function ClientScreen({ initialPlayers, countdown }: { initialPla
     checkpoint: number;
     nitro: number;
     drifting: boolean;
+    isNitroActive: boolean;
     wrongWayTimer: number | null;
     lapCount: number;
   }>({
@@ -35,6 +36,7 @@ export default function ClientScreen({ initialPlayers, countdown }: { initialPla
     checkpoint: 3,
     nitro: 100,
     drifting: false,
+    isNitroActive: false,
     wrongWayTimer: null,
     lapCount: 0,
   });
@@ -105,6 +107,7 @@ export default function ClientScreen({ initialPlayers, countdown }: { initialPla
 
       // Max Speed Cap
       const isNitroActive = (keys.current['ShiftLeft'] || keys.current['ShiftRight'] || keys.current['Nitro']) && p.nitro > 0;
+      p.isNitroActive = isNitroActive;
       const currentMaxSpeed = isNitroActive ? NITRO_SPEED : MAX_SPEED;
       
       if (p.speed > currentMaxSpeed) {
@@ -228,6 +231,7 @@ export default function ClientScreen({ initialPlayers, countdown }: { initialPla
           angle: p.angle,
           speed: p.speed,
           nitro: p.nitro,
+          isNitroActive: p.isNitroActive,
           drifting: p.drifting
         });
       }

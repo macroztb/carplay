@@ -14,5 +14,6 @@ export type Player = {
   laps: number;
   bestLapTime: number;
   nitro: number;
+  isNitroActive?: boolean;
   drifting: boolean;
 };
